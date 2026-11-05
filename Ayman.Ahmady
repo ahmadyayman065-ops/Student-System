@@ -1,0 +1,100 @@
+/**
+* نظام إدارة وتحليل نتائج الطلاب (Console-Based)
+* تم التطوير بواسطة: Ahmady Ayman
+*/
+
+// 1. هيكلة بيانات الطالب (Class & Constructor)
+class Student {
+    constructor(id, name, grades, attendance) {
+        this.id = id;
+        this.name = name;
+        this.grades = grades; // مصفوفة تحتوي على درجات 3 مواد
+        this.attendance = attendance; // نسبة الحضور مئوية
+    }
+
+    // 2. دوال التحليل الأكاديمي (Methods)
+
+    // دالة حساب المتوسط باستخدام reduce
+    calculateAverage() {
+        const sum = this.grades.reduce((total, grade) => total + grade, 0);
+        return sum / this.grades.length;
+    }
+
+    // دالة التقدير بناءً على المتوسط
+    getGradeLetter(avg) {
+        if (avg >= 90) return 'A';
+        else if (avg >= 80) return 'B';
+        else if (avg >= 70) return 'C';
+        else if (avg >= 60) return 'D';
+        else if (avg >= 50) return 'E';
+        else return 'F';
+    }
+
+    // دالة النتيجة النهائية (شرطان: المتوسط >= 50 والحضور >= 75)
+    getFinalResult() {
+        const avg = this.calculateAverage();
+        if (avg >= 50 && this.attendance >= 75) {
+            return "ناجح";
+        } else {
+            return "يحتاج مراجعة";
+        }
+    }
+}
+
+// 3. نظام تشغيل الجامعة (Objects Array)
+const studentsList = [
+    new Student(1, "محمد أحمد", [85, 90, 88], 90),
+    new Student(2, "محمود علي", [42, 45, 48], 80),
+    new Student(3, "فاطمة عمر", [60, 65, 70], 70),
+    new Student(4, "يوسف خالد", [44, 46, 45], 85)
+];
+
+console.log("========================================");
+console.log("       تقرير نظام إدارة نتائج الطلاب      ");
+console.log(`         إعداد الطالب: Ahmady Ayman      `);
+console.log("========================================\n");
+
+// 5. المخرجات (Console Logging) - تقرير لكل طالب في المصفوفة الرئيسية
+console.log("--- 1. التقارير الأكاديمية للطلاب ---");
+studentsList.forEach(student => {
+    const avg = student.calculateAverage();
+    const letter = student.getGradeLetter(avg);
+    const result = student.getFinalResult();
+
+    console.log(`الاسم: ${student.name} | رقم الجلوس: ${student.id}`);
+    console.log(`  - المتوسط: ${avg.toFixed(2)}`);
+    console.log(`  - التقدير: ${letter}`);
+    console.log(`  - النتيجة النهائية: ${result}`);
+    console.log("----------------------------------------");
+});
+
+// 4. لجنة الرأفة (Array Methods)
+const strugglingStudents = studentsList.filter(student => {
+    const avg = student.calculateAverage();
+    return avg >= 40 && avg < 50;
+});
+
+const aidedAverages = strugglingStudents.map(student => {
+    return student.calculateAverage() + 5;
+});
+
+const totalAidedAverages = aidedAverages.reduce((sum, avg) => sum + avg, 0);
+
+const countStruggling = strugglingStudents.length;
+const overallAidedAverage = countStruggling > 0 ? (totalAidedAverages / countStruggling): 0;
+
+console.log("\n--- 2. قائمة الطلاب المتعثرين المشمولين بالرأفة (+5 درجات) ---");
+if (countStruggling > 0) {
+    strugglingStudents.forEach((student, index) => {
+        const oldAvg = student.calculateAverage();
+        const newAvg = aidedAverages[index];
+        console.log(`الاسم: ${student.name} | المتوسط القديم: ${oldAvg} ==> المتوسط بعد الرأفة: ${newAvg}`);
+    });
+} else {
+    console.log("لا يوجد طلاب متعثرين في هذه الفئة.");
+}
+
+console.log("\n--- 3. تحليل نتائج لجنة الرأفة ---");
+console.log(`إجمالي عدد المتعثرين: ${countStruggling}`);
+console.log(`المتوسط العام لدرجات المتعثرين بعد الرأفة: ${overallAidedAverage.toFixed(2)}`);
+console.log("========================================");
